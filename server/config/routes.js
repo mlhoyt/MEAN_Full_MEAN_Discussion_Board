@@ -43,6 +43,37 @@ module.exports = function( globals ) {
   globals.app.put    ( '/api/comments/:pk', ( req, res ) => Comment_ctrlr.update   ( req, res ) );
   globals.app.delete ( '/api/comments/:pk', ( req, res ) => Comment_ctrlr.delete   ( req, res ) );
 
+  let mongoose = require('mongoose');
+  let User = mongoose.model( 'User' );
+
+  globals.app.post ( '/actions/login', ( req, res ) => {
+    User.findOne( { name: req.body.name } )
+      .catch( err => res.status( 500 ).json( err ) )
+      .then( data => {
+        if( data ) {
+          req.session.user_id = data._id;
+          console.log( "Debug: server: /actions/login: then: req.session.user_id:", req.session.user_id );
+          return res.json( data );
+        }
+        else {
+          let user = new User( { name: req.body.name } );
+          user.save()
+            .catch( err => res.status( 500 ).json( err ) )
+            .then( () => {
+              req.session.user_id = user._id;
+              console.log( "Debug: server: /actions/login: then: req.session.user_id:", req.session.user_id );
+              res.json( user );
+            });
+        }
+      });
+  });
+
+  globals.app.get ( '/actions/logout', ( req, res ) => {
+    console.log( "Debug: server: /actions/logout: logging out:", req.session.user_id );
+    req.session.destroy();
+    res.redirect( '/' );
+  });
+
   // Default (delegate to front-end router)
   globals.app.all( '*', ( req, res ) => res.sendFile( path.resolve( './client/dist/index.html' ) ) );
 }
