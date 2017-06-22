@@ -24,6 +24,11 @@ module.exports = function( globals ) {
         ref: 'Topic',
         default: [],
       }],
+      _comments: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Comment',
+        default: [],
+      }],
     },
     {
       timestamps: true,
