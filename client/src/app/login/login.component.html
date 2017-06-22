@@ -1,0 +1,9 @@
+<h5>login.component</h5>
+<div class="container">
+  <p>Hello!</p>
+  <p>Please enter your name to join and share your ideas</p>
+  <form #loginForm="ngForm" (submit)="doSubmit()">
+    <input type="text" name="user_name" [(ngModel)]="user_name" required minlength="1" />
+    <input type="submit" name="login" value="Enter" [disabled]="!loginForm.form.valid" />
+  </form>
+</div>
